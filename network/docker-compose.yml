@@ -6,7 +6,7 @@ networks:
 
 services:
 
-  ca.insurer.card.com:
+  ca.insurerorg.card.com:
     image: hyperledger/fabric-ca:x86_64-1.1.0
     environment:
       - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
@@ -18,11 +18,11 @@ services:
     command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
     volumns:
       - ./crypto-config/peerOrganizations/insurer.card.com/ca/:/etc/hyperledger/fabric-ca-server
-    container_name: ca_peerInsurerOrg
+    container_name: ca.insurerorg.card.com
     networks:
       - custom
 
-  ca.hospital.card.com:
+  ca.hospitalorg.card.com:
     image: hyperledger/fabric-ca:x86_64-1.1.0
     environment:
       - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
@@ -34,4 +34,137 @@ services:
     command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
     volumns:
       - ./crypto-config/peerOrganizations/insurer.card.com/ca/:/etc/hyperledger/fabric-ca-server
+    container_name: ca.hospitalorg.card.com
+    networks:
+      - custom
+
+  orderer.card.com:
+    container_name: orderer.card.com
+    image: hyperledger/fabric-orderer:x86_64-1.1.0
+    environment:
+      - ORDER_GENERAL_LOGLEVEL=debug
+      - ORDER_GENERAL_LISTENADDRESS=0.0.0.0
+      - ORDER_GENERAL_GENESISMETHOD=file
+      - ORDER_GENERAL_GENESISFILE=/etc/hyperledger/configtx/genesis.block
+      - ORDER_GENERAL_LOCALMSPID=OrdererMSP
+      - ORDER_GENERAL_LOCALMSPDIR=/etc/hyperledger/msp/orderer/msp
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/orderer
+    command: orderer
+    networks:
+      - custom
+    ports:
+      - 7050:7050
+    volumes:
+      - ./config/:/etc/hyperledger/configtx
+      - ./crypto-config/ordererOrganizations/card.com/orderers/orderer.card.com/:/etc/hyperledger/msp/orderer
+      - ./crypto-config/peerOrganizations/insurerorg.card.com/peers/peer0.insurerorg.card.com/:/etc/hyperledger/msp/peerInsurerOrg
+      - ./crypto-config/peerOrganizations/hospitalorg.card.com/peers/peer0.hospitalorg.card.com/:/etc/hyperledger/msp/peerHospitalOrg
+
+  peer0.insurerorg.card.com:
+    container_name: peer0.insurerorg.card.com
+    image: hyperledger/fabric-peer:x86_64-1.1.0
+    environment:
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_PEER_ID=peer0.insurerorg.card.com
+      - CORE_LOGGING_PEER=debug
+      - CORE_CHAINCODE_LOGGING_LEVEL=DEBUG
+      - CORE_PEER_LOCALMSPID=InsurerOrgMSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/msp
+      - CORE_PEER_ADDRESS=peer0.insurerorg.card.com:7051
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=network_custom
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric
+    command: peer node start
+    ports:
+      - 7051:7051
+      - 7053:7053
+    networks:
+      - custom
+    volumes:
+        - /var/run/:/host/var/run/
+        - ./crypto-config/peerOrganizations/insurerorg.card.com/peers/peer0.insurerorg.card.com/msp:/etc/hyperledger/fabric/msp
+        - ./crypto-config/peerOrganizations/insurerorg.card.com/users:/etc/hyperledger/msp/users
+        - ./config:/etc/hyperledger/configtx
+    depends_on:
+      - orderer.example.com
+
+  peer1.insurerorg.card.com:
+    container_name: peer1.insurerorg.card.com
+    image: hyperledger/fabric-peer:x86_64-1.1.0
+    environment:
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_PEER_ID=peer1.insurerorg.card.com
+      - CORE_LOGGING_PEER=debug
+      - CORE_CHAINCODE_LOGGING_LEVEL=DEBUG
+      - CORE_PEER_LOCALMSPID=InsurerOrgMSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/msp
+      - CORE_PEER_ADDRESS=peer1.insurerorg.card.com:7051
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=network_custom
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric
+    command: peer node start
+    ports:
+      - 7056:7051
+      - 7058:7053
+    networks:
+      - custom
+    volumes:
+        - /var/run/:/host/var/run/
+        - ./crypto-config/peerOrganizations/insurerorg.card.com/peers/peer1.insurerorg.card.com/msp:/etc/hyperledger/fabric/msp
+        - ./crypto-config/peerOrganizations/insurerorg.card.com/users:/etc/hyperledger/msp/users
+        - ./config:/etc/hyperledger/configtx
+    depends_on:
+      - orderer.example.com
+
+  peer0.hospitalorg.card.com:
+    container_name: peer0.hospitalorg.card.com
+    image: hyperledger/fabric-peer:x86_64-1.1.0
+    environment:
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_PEER_ID=peer0.hospitalorg.card.com
+      - CORE_LOGGING_PEER=debug
+      - CORE_CHAINCODE_LOGGING_LEVEL=DEBUG
+      - CORE_PEER_LOCALMSPID=HospitalOrgMSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/msp
+      - CORE_PEER_ADDRESS=peer0.hospitalorg.card.com:7051
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=network_custom
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric
+    command: peer node start
+    ports:
+      - 8051:7051
+      - 8053:7053
+    networks:
+      - custom
+    volumes:
+        - /var/run/:/host/var/run/
+        - ./crypto-config/peerOrganizations/hospitalorg.card.com/peers/peer0.hospitalorg.card.com/msp:/etc/hyperledger/fabric/msp
+        - ./crypto-config/peerOrganizations/hospitalorg.card.com/users:/etc/hyperledger/msp/users
+        - ./config:/etc/hyperledger/configtx
+    depends_on:
+      - orderer.example.com
+
+  peer1.hospitalorg.card.com:
+    container_name: peer1.hospitalorg.card.com
+    image: hyperledger/fabric-peer:x86_64-1.1.0
+    environment:
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_PEER_ID=peer1.hospitalorg.card.com
+      - CORE_LOGGING_PEER=debug
+      - CORE_CHAINCODE_LOGGING_LEVEL=DEBUG
+      - CORE_PEER_LOCALMSPID=HospitalOrgMSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/msp
+      - CORE_PEER_ADDRESS=peer1.hospitalorg.card.com:7051
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=network_custom
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric
+    command: peer node start
+    ports:
+      - 8056:7051
+      - 8058:7053
+    networks:
+      - custom
+    volumes:
+        - /var/run/:/host/var/run/
+        - ./crypto-config/peerOrganizations/hospitalorg.card.com/peers/peer1.hospitalorg.card.com/msp:/etc/hyperledger/fabric/msp
+        - ./crypto-config/peerOrganizations/hospitalorg.card.com/users:/etc/hyperledger/msp/users
+        - ./config:/etc/hyperledger/configtx
+    depends_on:
+      - orderer.example.com
       
