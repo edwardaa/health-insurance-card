@@ -1,30 +1,3 @@
-################################################################################
-#
-#   Profile
-#
-#   - Different configuration profiles may be encoded here to be specified
-#   as parameters to the configtxgen tool
-#
-################################################################################
-Profiles:
-
-    TwoOrgsOrdererGenesis:
-        Orderer:
-            <<: *OrdererDefaults
-            Organizations:
-                - *OrdererOrg
-        Consortiums:
-            CardConsortium:
-                Organizations:
-                    - *InsurerOrg
-                    - *HospitalOrg
-    TwoOrgsChannel:
-        Consortium: CardConsortium
-        Application:
-            <<: *ApplicationDefaults
-            Organizations:
-                - *InsurerOrg
-                - *HospitalOrg
 
 ################################################################################
 #
@@ -141,3 +114,31 @@ Application: &ApplicationDefaults
     # Organizations is the list of orgs which are defined as participants on
     # the application side of the network
     Organizations:
+
+################################################################################
+#
+#   Profile
+#
+#   - Different configuration profiles may be encoded here to be specified
+#   as parameters to the configtxgen tool
+#
+################################################################################
+Profiles:
+
+    TwoOrgsOrdererGenesis:
+        Orderer:
+            <<: *OrdererDefaults
+            Organizations:
+                - *OrdererOrg
+        Consortiums:
+            CardConsortium:
+                Organizations:
+                    - *InsurerOrg
+                    - *HospitalOrg
+    TwoOrgsChannel:
+        Consortium: CardConsortium
+        Application:
+            <<: *ApplicationDefaults
+            Organizations:
+                - *InsurerOrg
+                - *HospitalOrg

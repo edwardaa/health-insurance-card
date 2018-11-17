@@ -1,0 +1,37 @@
+
+version: '1'
+
+networks:
+  custom:
+
+services:
+
+  ca.insurer.card.com:
+    image: hyperledger/fabric-ca:x86_64-1.1.0
+    environment:
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_CA_NAME=ca-insurer
+      - FABRIC_CA_SERVER_CA_CERTIFICATE=/etc/hyperledger/fabric-ca-server/ca.insurerorg.card.com-cert.pem
+      - FABRIC_CA_SERVER_CA_KEYFILE=/etc/hyperledger/fabric-ca-server/50d257f2d142be0c22e54d678ddeb341a7c657d79879822209d29a7810543be2_sk
+    ports:
+      - "7054:7054"
+    command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
+    volumns:
+      - ./crypto-config/peerOrganizations/insurer.card.com/ca/:/etc/hyperledger/fabric-ca-server
+    container_name: ca_peerInsurerOrg
+    networks:
+      - custom
+
+  ca.hospital.card.com:
+    image: hyperledger/fabric-ca:x86_64-1.1.0
+    environment:
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_CA_NAME=ca-hospital
+      - FABRIC_CA_SERVER_CA_CERTIFICATE=/etc/hyperledger/fabric-ca-server/ca.hospitalorg.card.com-cert.pem
+      - FABRIC_CA_SERVER_CA_KEYFILE=/etc/hyperledger/fabric-ca-server/26922d4693fda76c1319dd32b8e41bd801c03739c9455a99cc3eb99376a684d0_sk
+    ports:
+      - "8054:7054"
+    command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
+    volumns:
+      - ./crypto-config/peerOrganizations/insurer.card.com/ca/:/etc/hyperledger/fabric-ca-server
+      

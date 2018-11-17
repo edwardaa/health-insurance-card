@@ -16,16 +16,16 @@ OrdererOrgs:
     # "Specs" - See PeerOrgs below for complete description
     # ---------------------------------------------------------------------------
     Specs:
-      - Hostname:orderer
+      - Hostname: orderer
 # ---------------------------------------------------------------------------
 # "PeerOrgs" - Definition of organizations managing peer nodes
 # ---------------------------------------------------------------------------
 PeerOrgs:
   # ---------------------------------------------------------------------------
-  # Hospital
+  # Insurer
   # ---------------------------------------------------------------------------
-  - Name: HospitalOrg
-    Domain: hospitalorg.card.com
+  - Name: InsurerOrg
+    Domain: insurerorg.card.com
     EnableNodeOUs: true
     CA:
         Country: VN
@@ -42,10 +42,10 @@ PeerOrgs:
       Users:
         Count: 1
   # ---------------------------------------------------------------------------
-  # Insurer
+  # Hospital
   # ---------------------------------------------------------------------------
-  - Name: InsurerOrg
-    Domain: insurerorg.card.com
+  - Name: HospitalOrg
+    Domain: hospitalorg.card.com
     EnableNodeOUs: true
     CA:
         Country: VN
