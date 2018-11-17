@@ -6,7 +6,7 @@ OrdererOrgs:
   # Orderer
   # ---------------------------------------------------------------------------
   - Name: Orderer
-    Domain: healthinsurancecard.com
+    Domain: card.com
     # EnableNodeOUs: true
     CA:
         Country: VN
@@ -24,8 +24,8 @@ PeerOrgs:
   # ---------------------------------------------------------------------------
   # Hospital
   # ---------------------------------------------------------------------------
-  - Name: Hospital
-    Domain: hospital.healthinsurancecard.com
+  - Name: HospitalOrg
+    Domain: hospitalorg.card.com
     EnableNodeOUs: true
     CA:
         Country: VN
@@ -44,8 +44,8 @@ PeerOrgs:
   # ---------------------------------------------------------------------------
   # Insurer
   # ---------------------------------------------------------------------------
-  - Name: Insurer
-    Domain: insurer.healthinsurancecard.com
+  - Name: InsurerOrg
+    Domain: insurerorg.card.com
     EnableNodeOUs: true
     CA:
         Country: VN
@@ -61,4 +61,3 @@ PeerOrgs:
       # ---------------------------------------------------------------------------
       Users:
         Count: 1
-

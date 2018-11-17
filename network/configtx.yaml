@@ -14,17 +14,17 @@ Profiles:
             Organizations:
                 - *OrdererOrg
         Consortiums:
-            HealthInsuranceConsortium:
+            CardConsortium:
                 Organizations:
-                    - *Insurer
-                    - *Hospital
+                    - *InsurerOrg
+                    - *HospitalOrg
     TwoOrgsChannel:
-        Consortium: HealthInsuranceConsortium
+        Consortium: CardConsortium
         Application:
             <<: *ApplicationDefaults
             Organizations:
-                - *Insurer
-                - *Hospital
+                - *InsurerOrg
+                - *HospitalOrg
 
 ################################################################################
 #
@@ -47,40 +47,40 @@ Organizations:
         ID: OrdererMSP
 
         # MSPDir is the filesystem path which contains the MSP configuration
-        MSPDir: crypto-config/ordererOrganizations/healthinsurancecard.com/msp
+        MSPDir: crypto-config/ordererOrganizations/card.com/msp
 
-    - &Insurer
+    - &InsurerOrg
         # DefaultOrg defines the organization which is used in the sampleconfig
         # of the fabric.git development environment
-        Name: InsurerMSP
+        Name: InsurerOrgMSP
 
         # ID to load the MSP definition as
-        ID: InsurerMSP
+        ID: InsurerOrgMSP
 
-        MSPDir: crypto-config/peerOrganizations/insurer.healthinsurancecard.com/msp
+        MSPDir: crypto-config/peerOrganizations/insurerorg.card.com/msp
 
         # AnchorPeers:
         #     # AnchorPeers defines the location of peers which can be used
         #     # for cross org gossip communication.  Note, this value is only
         #     # encoded in the genesis block in the Application section context
-        #     - Host: peer0.insurer.healthinsurancecard.com
+        #     - Host: peer0.insurerorg.card.com
         #       Port: 7051
 
-    - &Hospital
+    - &HospitalOrg
         # DefaultOrg defines the organization which is used in the sampleconfig
         # of the fabric.git development environment
-        Name: HospitalMSP
+        Name: HospitalOrgMSP
 
         # ID to load the MSP definition as
-        ID: HospitalMSP
+        ID: HospitalOrgMSP
 
-        MSPDir: crypto-config/peerOrganizations/hospital.healthinsurancecard.com/msp
+        MSPDir: crypto-config/peerOrganizations/hospitalorg.card.com/msp
 
         # AnchorPeers:
         #     # AnchorPeers defines the location of peers which can be used
         #     # for cross org gossip communication.  Note, this value is only
         #     # encoded in the genesis block in the Application section context
-        #     - Host: peer0.hospital.healthinsurancecard.com
+        #     - Host: peer0.hospitalorg.card.com
         #       Port: 7051
 
 ################################################################################
@@ -98,7 +98,7 @@ Orderer: &OrdererDefaults
     OrdererType: solo
 
     Addresses:
-        - orderer.healthinsurancecard.com:7050
+        - orderer.card.com:7050
 
     # Batch Timeout: The amount of time to wait before creating a batch
     BatchTimeout: 2s
