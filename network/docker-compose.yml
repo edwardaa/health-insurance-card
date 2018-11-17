@@ -1,5 +1,5 @@
 
-version: '1'
+version: '2'
 
 networks:
   custom:
@@ -16,8 +16,8 @@ services:
     ports:
       - "7054:7054"
     command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
-    volumns:
-      - ./crypto-config/peerOrganizations/insurer.card.com/ca/:/etc/hyperledger/fabric-ca-server
+    volumes:
+      - ./crypto-config/peerOrganizations/insurerorg.card.com/ca/:/etc/hyperledger/fabric-ca-server
     container_name: ca.insurerorg.card.com
     networks:
       - custom
@@ -32,8 +32,8 @@ services:
     ports:
       - "8054:7054"
     command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
-    volumns:
-      - ./crypto-config/peerOrganizations/insurer.card.com/ca/:/etc/hyperledger/fabric-ca-server
+    volumes:
+      - ./crypto-config/peerOrganizations/hospital.card.com/ca/:/etc/hyperledger/fabric-ca-server
     container_name: ca.hospitalorg.card.com
     networks:
       - custom
@@ -85,7 +85,7 @@ services:
         - ./crypto-config/peerOrganizations/insurerorg.card.com/users:/etc/hyperledger/msp/users
         - ./config:/etc/hyperledger/configtx
     depends_on:
-      - orderer.example.com
+      - orderer.card.com
 
   peer1.insurerorg.card.com:
     container_name: peer1.insurerorg.card.com
@@ -112,7 +112,7 @@ services:
         - ./crypto-config/peerOrganizations/insurerorg.card.com/users:/etc/hyperledger/msp/users
         - ./config:/etc/hyperledger/configtx
     depends_on:
-      - orderer.example.com
+      - orderer.card.com
 
   peer0.hospitalorg.card.com:
     container_name: peer0.hospitalorg.card.com
@@ -139,7 +139,7 @@ services:
         - ./crypto-config/peerOrganizations/hospitalorg.card.com/users:/etc/hyperledger/msp/users
         - ./config:/etc/hyperledger/configtx
     depends_on:
-      - orderer.example.com
+      - orderer.card.com
 
   peer1.hospitalorg.card.com:
     container_name: peer1.hospitalorg.card.com
@@ -166,5 +166,5 @@ services:
         - ./crypto-config/peerOrganizations/hospitalorg.card.com/users:/etc/hyperledger/msp/users
         - ./config:/etc/hyperledger/configtx
     depends_on:
-      - orderer.example.com
+      - orderer.card.com
       
