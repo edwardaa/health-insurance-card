@@ -6,8 +6,8 @@ set -e
 #Start from here
 echo -e "\nGenerating crypto-config folder"
 
-if [ -d "crypto-config" ]; then
-    rm -rf crypto-config
+if [ ! -d "crypto-config" ]; then
+    cryptogen generate --config=./crypto-config.yaml
 fi
-cryptogen generate --config=./crypto-config.yaml
+
 
