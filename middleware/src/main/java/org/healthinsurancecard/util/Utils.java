@@ -28,7 +28,6 @@ import org.hyperledger.fabric.sdk.Enrollment;
 import org.hyperledger.fabric.sdk.Orderer;
 import org.hyperledger.fabric.sdk.Peer;
 import org.hyperledger.fabric.sdk.ProposalResponse;
-import org.hyperledger.fabric.sdk.TransactionRequest.Type;
 
 public class Utils {
 	
