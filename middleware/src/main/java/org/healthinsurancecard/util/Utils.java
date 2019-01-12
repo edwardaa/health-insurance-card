@@ -13,11 +13,22 @@ import java.nio.file.Paths;
 import java.security.KeyFactory;
 import java.security.PrivateKey;
 import java.security.spec.PKCS8EncodedKeySpec;
+import java.util.Collection;
+import java.util.List;
 
 import javax.xml.bind.DatatypeConverter;
 
+import org.healthinsurancecard.client.ChannelClient;
+import org.healthinsurancecard.client.FabricClient;
 import org.healthinsurancecard.user.CAEnrollment;
 import org.healthinsurancecard.user.UserContext;
+import org.hyperledger.fabric.sdk.Channel;
+import org.hyperledger.fabric.sdk.ChannelConfiguration;
+import org.hyperledger.fabric.sdk.Enrollment;
+import org.hyperledger.fabric.sdk.Orderer;
+import org.hyperledger.fabric.sdk.Peer;
+import org.hyperledger.fabric.sdk.ProposalResponse;
+import org.hyperledger.fabric.sdk.TransactionRequest.Type;
 
 public class Utils {
 	
@@ -114,6 +125,100 @@ public class Utils {
 			}
 		}
 		return dir.delete();
+	}
+	
+	public static UserContext getAdminUserContext(String keyPath, String certPath, String mspName, String adminName) throws Exception {
+		UserContext adminUserContext = new UserContext();
+		File pkFolder1 = new File(keyPath);
+		File[] pkFiles1 = pkFolder1.listFiles();
+		
+		File certFolder1 = new File(certPath);
+		File[] certFiles1 = certFolder1.listFiles();
+		Enrollment enrollOrg1Admin = getEnrollment(keyPath, pkFiles1[0].getName(),
+				certPath, certFiles1[0].getName());
+		adminUserContext.setEnrollment(enrollOrg1Admin);
+		adminUserContext.setMspId(mspName);
+		adminUserContext.setName(adminName);
+		return adminUserContext;
+	}
+	
+	/**
+	 * Create and join peers to the channel
+	 * @param adminUserContext
+	 * @param channelName
+	 * @param orderName
+	 * @param ordererURL
+	 * @param peers
+	 * @return
+	 * @throws Exception
+	 */
+	public static Channel createAndJoinPeersToChannel(UserContext adminUserContext, String channelName, 
+			String orderName, String ordererURL, List<Peer> peers) throws Exception {
+		FabricClient fabClient = new FabricClient(adminUserContext);
+
+		// Create a new channel
+		Orderer orderer = fabClient.getInstance().newOrderer(orderName, ordererURL);
+		ChannelConfiguration channelConfiguration = new ChannelConfiguration(new File(channelName));
+
+		byte[] channelConfigurationSignatures = fabClient.getInstance()
+				.getChannelConfigurationSignature(channelConfiguration, adminUserContext);
+
+		Channel mychannel = fabClient.getInstance().
+				newChannel(channelName, orderer, channelConfiguration,
+				channelConfigurationSignatures);
+		
+		for (Peer peer : peers) {
+			mychannel.joinPeer(peer);
+		}
+		
+		mychannel.addOrderer(orderer);
+
+		mychannel.initialize();
+		
+		return mychannel;
+	}
+	
+	/**
+	 * Install the chaincode on an organization
+	 * 
+	 * @param adminUserContext
+	 * @param chaincodeName
+	 * @param chaincodeRootDir
+	 * @param chaincodePath
+	 * @param chaincodeVersion
+	 * @param chaincodeLanguage
+	 * @param peers
+	 * @return
+	 * @throws Exception
+	 */
+	public static Collection<ProposalResponse> installChaincodeOnOrganization(UserContext adminUserContext, String chaincodeName,
+			String chaincodeRootDir, String chaincodePath, String chaincodeVersion, String chaincodeLanguage, Collection<Peer> peers) throws Exception {
+		FabricClient fabClient = new FabricClient(adminUserContext);
+		Collection<ProposalResponse> responses = fabClient.installChaincode(chaincodeName,
+				chaincodePath, chaincodeRootDir, chaincodeLanguage, chaincodeVersion, peers);
+		return responses;
+	}
+	
+	/**
+	 * Instantiate chaincode on channel
+	 * 
+	 * @param channelClient
+	 * @param chaincodeName
+	 * @param chaincodeVerion
+	 * @param chaincodePath
+	 * @param chaincodeLanguage
+	 * @param args
+	 * @param policyPath
+	 * @return
+	 * @throws Exception
+	 */
+	public static Collection<ProposalResponse> instantiateChaincodeOnChannel(
+			ChannelClient channelClient, String chaincodeName, String chaincodeVerion,
+			String chaincodePath, String chaincodeLanguage, String[] args, String policyPath) throws Exception {
+		
+		Collection<ProposalResponse> responses = channelClient.instantiateChaincode(chaincodeName, chaincodeVerion,
+				chaincodePath, chaincodeLanguage, "init", args, policyPath);
+		return responses;
 	}
 
 }

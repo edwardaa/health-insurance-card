@@ -14,7 +14,10 @@ import org.hyperledger.fabric.sdk.ChaincodeEndorsementPolicy;
 import org.hyperledger.fabric.sdk.ChaincodeID;
 import org.hyperledger.fabric.sdk.Channel;
 import org.hyperledger.fabric.sdk.InstantiateProposalRequest;
+import org.hyperledger.fabric.sdk.Orderer;
 import org.hyperledger.fabric.sdk.ProposalResponse;
+import org.hyperledger.fabric.sdk.QueryByChaincodeRequest;
+import org.hyperledger.fabric.sdk.TransactionProposalRequest;
 import org.hyperledger.fabric.sdk.BlockEvent.TransactionEvent;
 import org.hyperledger.fabric.sdk.TransactionRequest.Type;
 
@@ -55,6 +58,18 @@ public class ChannelClient {
 		
 	}
 	
+	/**
+	 * Instantiate chaincode on channel
+	 * @param chaincodeName
+	 * @param version
+	 * @param chaincodePath
+	 * @param language
+	 * @param functionName
+	 * @param functionArgs
+	 * @param policyPath
+	 * @return
+	 * @throws Exception
+	 */
 	public Collection<ProposalResponse> instantiateChaincode(
 			String chaincodeName,
 			String version,
@@ -91,5 +106,55 @@ public class ChannelClient {
 		
 		return responses;
 		
+	}
+	
+	/**
+	 * Query by chaincode
+	 * @param chaincodeName
+	 * @param funcName
+	 * @param args
+	 * @return
+	 * @throws Exception
+	 */
+	public Collection<ProposalResponse> queryByChaincode(String chaincodeName, 
+			String funcName, String[] args) throws Exception {
+		QueryByChaincodeRequest request = fabricClient.getInstance().newQueryProposalRequest();
+		ChaincodeID ccId = ChaincodeID.newBuilder().setName(chaincodeName).build();
+		request.setChaincodeID(ccId);
+		request.setFcn(funcName);
+		if (args != null) {
+			request.setArgs(args);
+		}
+		Collection<ProposalResponse> response = channel.queryByChaincode(request);
+		return response;
+	}
+	
+	public Collection<ProposalResponse> sendTransactionProposal(TransactionProposalRequest request) throws Exception {
+		Collection<ProposalResponse> responses = channel.sendTransactionProposal(request, channel.getPeers());
+		for (ProposalResponse pres : responses) {
+			String stringResponse = new String(pres.getChaincodeActionResponsePayload());
+			Logger.getLogger(ChannelClient.class.getName()).log(Level.INFO,
+					"Transaction proposal on channel " + channel.getName() + " " + pres.getMessage() + " "
+							+ pres.getStatus() + " with transaction id:" + pres.getTransactionID());
+			Logger.getLogger(ChannelClient.class.getName()).log(Level.INFO,stringResponse);
+		}
+		return responses;
+	}
+	
+	/**
+	 * Send transaction to orders
+	 * @param proposalResponses
+	 * @param orderers
+	 * @return
+	 */
+	public CompletableFuture<TransactionEvent> sendTransactionToOrders(Collection<ProposalResponse> proposalResponses, 
+			Collection<Orderer> orderers) {
+		CompletableFuture<TransactionEvent> cf = null;
+		if (orderers != null && orderers.isEmpty()) {
+			cf = channel.sendTransaction(proposalResponses);
+		} else {
+			cf = channel.sendTransaction(proposalResponses, orderers);
+		}
+		return cf;
 	}
 }
