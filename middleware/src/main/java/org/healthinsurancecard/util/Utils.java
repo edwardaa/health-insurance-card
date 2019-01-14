@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
@@ -15,11 +17,13 @@ import java.security.PrivateKey;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.Collection;
 import java.util.List;
+import java.util.Scanner;
 
 import javax.xml.bind.DatatypeConverter;
 
 import org.healthinsurancecard.client.ChannelClient;
 import org.healthinsurancecard.client.FabricClient;
+import org.healthinsurancecard.config.NetworkConfig;
 import org.healthinsurancecard.user.CAEnrollment;
 import org.healthinsurancecard.user.UserContext;
 import org.hyperledger.fabric.sdk.Channel;
@@ -28,6 +32,9 @@ import org.hyperledger.fabric.sdk.Enrollment;
 import org.hyperledger.fabric.sdk.Orderer;
 import org.hyperledger.fabric.sdk.Peer;
 import org.hyperledger.fabric.sdk.ProposalResponse;
+
+import com.google.gson.Gson;
+import com.google.gson.stream.JsonReader;
 
 public class Utils {
 	
@@ -219,5 +226,12 @@ public class Utils {
 				chaincodePath, chaincodeLanguage, "init", args, policyPath);
 		return responses;
 	}
-
+	
+	public static NetworkConfig getNetworkConfig(String filePath) throws Exception {
+		JsonReader reader = new JsonReader(new FileReader(filePath));
+		Gson gson = new Gson();
+		NetworkConfig config = gson.fromJson(reader, NetworkConfig.class);
+		return config;
+	}
+	
 }

@@ -42,15 +42,15 @@ public class FabricClient {
 	}
 	
 	/**
-	 * Create Channel
+	 * Create a new channel
 	 * @param name
 	 * @return channel client
 	 * @throws Exception
 	 */
 	public ChannelClient createChannel(String name) throws Exception {
 		Channel channel = instance.newChannel(name);
-		ChannelClient channelClient = new ChannelClient(name, channel, this);
-		return channelClient;
+		ChannelClient client = new ChannelClient(name, channel, this);
+		return client;
 	}
 	
 	/**

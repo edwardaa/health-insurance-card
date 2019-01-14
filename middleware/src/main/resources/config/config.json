@@ -1,0 +1,80 @@
+{
+	"orderer":{
+		"mspId": "OrdererMSP",
+		"url": "grpc://localhost:7050",
+		"serverHostname": "orderer.card.com",
+		"tlsCertificatePath":""
+	},
+	"organizations":
+	[{
+		"name": "InsurerOrg",
+		"mspId": "InsurerOrgMSP",
+		"useradmin": {
+			"username": "admin",
+			"password": "adminpw",
+			"privateKeyPath": "crypto-config/peerOrganizations/insurerorg.card.com/users/Admin@org1.example.com/keystore",
+			"certificatePath": "crypto-config/peerOrganizations/insurerorg.card.com/users/Admin@org1.example.com/admincerts"
+		},
+		"ca": {
+			"name": "ca-insurerorg",
+			"url": "http://localhost:7054"
+		},
+		"peers":
+			[
+				{
+					"requestURL": "grpc://localhost:7051",
+					"eventURL": "grpc://localhost:7053",
+					"serverHostname": "peer0.insurerorg.card.com",
+					"tlsCACertificatePath":""
+				},{
+					"requestURL": "grpc://localhost:7056",
+					"eventURL": "grpc://localhost:7058",
+					"serverHostname": "peer0.insurerorg.card.com",
+					"tlsCACertificatePath":""
+				}
+			]
+	  },{
+		"name": "HospitalOrg",
+		"mspId": "HospitalOrgMSP",
+		"useradmin": {
+			"username": "admin",
+			"password": "adminpw",
+			"privateKeyPath": "crypto-config/peerOrganizations/hospitalorg.card.com/users/Admin@org1.example.com/keystore",
+			"certificatePath": "crypto-config/peerOrganizations/hospitalorg.card.com/users/Admin@org1.example.com/admincerts"
+		},
+		"ca": {
+			"name": "ca-hospitalorg",
+			"url": "http://localhost:8054"
+		},
+		"peers":
+			[
+				{
+					"requestURL": "grpc://localhost:8051",
+					"eventURL": "grpc://localhost:8053",
+					"serverHostname": "peer0.hospitalorg.card.com",
+					"tlsCACertificatePath":""
+				},{
+				"requestURL": "grpc://localhost:8056",
+				"eventURL": "grpc://localhost:8058",
+				"serverHostname": "peer0.hospitalorg.card.com",
+				"tlsCACertificatePath":""
+				}
+			]
+	}],
+	"chaincode":{
+		"name": "card",
+		"rootDir": "chaincode",
+		"path": "github.com/card",
+		"version": "1"
+	},
+	"channel":{
+		"name": "cardchannel",
+		"configPath":"config/channel.tx"
+	},
+	"useradmin":{
+		"username": "admin",
+		"password": "adminpw",
+		"privateKeyPath": "",
+		"certificatePath": ""
+	} 
+}
