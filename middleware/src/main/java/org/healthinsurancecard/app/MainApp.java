@@ -13,12 +13,12 @@ import com.google.gson.stream.JsonReader;
 
 public class MainApp {
 	public static void main(String[] args) {
-		MainApp app = new MainApp();
-		//System.out.println(app.getFileContent("config/config.json"));
-		Gson gson = new Gson();
-		NetworkConfig config = gson.fromJson(app.getFileContent("config/config.json"), NetworkConfig.class);
-		System.out.println(config.toString());
-		System.out.println(gson.toJson(config));
+		try {
+			System.out.println(Utils.getNetworkConfig("config/config.json").toString());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public String getFileContent(String filePath) {

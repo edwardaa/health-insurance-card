@@ -24,6 +24,21 @@ public class NetworkConfig {
 	/**
 	 * NetworkConfig constructor
 	 * 
+	 * @param configPath
+	 */
+	public NetworkConfig(String configPath) {
+		Gson gson = new Gson();
+		NetworkConfig config = gson.fromJson(parseToJavaObject(configPath), NetworkConfig.class);
+		this.orderer = config.getOrderer();
+		this.organizations = config.getOrganizations();
+		this.chaincode = config.getChaincode();
+		this.channel = config.getChannel();
+		this.useradmin = config.getUserAdmin();
+	}
+	
+	/**
+	 * NetworkConfig constructor
+	 * 
 	 * @param orderer
 	 * @param organizations
 	 * @param chaincode
@@ -37,12 +52,6 @@ public class NetworkConfig {
 		this.chaincode = chaincode;
 		this.channel = channel;
 		this.useradmin = userAdmin;
-	}
-	
-	public NetworkConfig(String configPath) {
-		Gson gson = new Gson();
-		NetworkConfig config = gson.fromJson(parseToJavaObject(configPath), NetworkConfig.class);
-		
 	}
 	
 	public String parseToJavaObject(String configPath) {

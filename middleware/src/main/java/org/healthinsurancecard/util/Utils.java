@@ -228,9 +228,7 @@ public class Utils {
 	}
 	
 	public static NetworkConfig getNetworkConfig(String filePath) throws Exception {
-		JsonReader reader = new JsonReader(new FileReader(filePath));
-		Gson gson = new Gson();
-		NetworkConfig config = gson.fromJson(reader, NetworkConfig.class);
+		NetworkConfig config = new NetworkConfig(filePath);
 		return config;
 	}
 	
