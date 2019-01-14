@@ -28,7 +28,7 @@ public class NetworkConfig {
 	 */
 	public NetworkConfig(String configPath) {
 		Gson gson = new Gson();
-		NetworkConfig config = gson.fromJson(parseToJavaObject(configPath), NetworkConfig.class);
+		NetworkConfig config = gson.fromJson(getJsonDataAsString(configPath), NetworkConfig.class);
 		this.orderer = config.getOrderer();
 		this.organizations = config.getOrganizations();
 		this.chaincode = config.getChaincode();
@@ -54,9 +54,8 @@ public class NetworkConfig {
 		this.useradmin = userAdmin;
 	}
 	
-	public String parseToJavaObject(String configPath) {
+	public String getJsonDataAsString(String configPath) {
 		StringBuilder result = new StringBuilder("");
-
 		//Get file from resources folder
 		ClassLoader classLoader = getClass().getClassLoader();
 		File file = new File(classLoader.getResource(configPath).getFile());
@@ -67,13 +66,11 @@ public class NetworkConfig {
 				String line = scanner.nextLine();
 				result.append(line).append("\n");
 			}
-
 			scanner.close();
 
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-			
 		return result.toString();
 	}
 
